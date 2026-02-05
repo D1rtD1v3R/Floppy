@@ -23,7 +23,7 @@ function scan(){
   }
 
   else if(scans === 3){
-    print("<br>✔ PARTIAL DIRECTORY RECOVERED");
+    print("<br>✔PARTIAL DIRECTORY RECOVERED");
     print("Hidden partition detected...");
     print("Continue scanning.");
   }
@@ -34,12 +34,12 @@ function scan(){
   }
 
   else if(scans >= 5){
-    print("<br>✔ FULL RECOVERY COMPLETE");
+    print("<br>✔FULL RECOVERY COMPLETE");
     print("Filesystem mounted.");
     print("<br>PASSWORD RECOVERED: <b>sector7</b>");
     print("<br><a href='stage2.html'>Mount recovered filesystem</a>");
   }
 }
 
-// 🔥 THIS is the key line for NFC multi-scan
+//THIS is the key line for NFC multi-scan
 window.onload = scan;
