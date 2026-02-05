@@ -23,13 +23,14 @@ const board = document.getElementById("leaderboard");
 
 function print(text=""){ term.innerHTML += text + "\n"; window.scrollTo(0,document.body.scrollHeight); }
 
-// ===== STATIC PRIZE LOCATION (EDIT BEFORE CON) =====
-const prizeLocation = "[SET LOCATION BEFORE DEF CON — ex: Large plant near main escalator 🌱]";
+// ===== EDIT THIS BEFORE DEF CON =====
+const FINAL_PHRASE = "plant";  // answer players must reconstruct
+const prizeLocation = "[EDIT BEFORE DEF CON — example: Large plant near escalator]";
 
-// ===== LEADERBOARD (LOCAL PER DEVICE) =====
+// ===== LEADERBOARD =====
 function loadBoard(){
   const data = JSON.parse(localStorage.getItem("floppy_leaders")||"[]");
-  board.innerHTML = "<b>🏆 FLOPPY DISK RECOVERY LEADERBOARD</b><br>";
+  board.innerHTML = "<b>FLOPPY DISK RECOVERY LEADERBOARD</b><br>";
   if(data.length===0){ board.innerHTML += "No recoveries yet.<br>"; return; }
   data.forEach((e,i)=>{
     board.innerHTML += `${i+1}. ${e.name} — ${e.time}<br>`;
@@ -44,7 +45,7 @@ function addLeader(name){
 }
 loadBoard();
 
-// ===== TERMINAL BOOT =====
+// ===== BOOT =====
 print("Microsoft Floppy Disk Recovery Utility v3.1");
 print("Copyright (C) 1997 DiskCorp");
 print("");
@@ -53,6 +54,7 @@ print("Recovered: README.TXT");
 print("Recovered: MAP.DAT");
 print("Recovered: BADSECT.LOG");
 print("Warning: Deleted file detected");
+print("Use sector order to rebuild deleted file.");
 print("");
 
 function showHelp(){
@@ -61,20 +63,21 @@ function showHelp(){
   print("TYPE README.TXT");
   print("TYPE MAP.DAT");
   print("TYPE BADSECT.LOG");
-  print("RECOVER PRIZE.BIN");
+  print("REBUILD <word>");
   print("CLS");
 }
 
 input.addEventListener("keydown", e=>{
   if(e.key==="Enter"){
-    const cmd=input.value.trim().toUpperCase();
-    print("> "+cmd);
-    handle(cmd);
+    const raw=input.value.trim();
+    const cmd=raw.toUpperCase();
+    print("> "+raw);
+    handle(raw,cmd);
     input.value="";
   }
 });
 
-function handle(cmd){
+function handle(raw,cmd){
   if(cmd==="DIR"){
     print("README.TXT");
     print("MAP.DAT");
@@ -86,45 +89,56 @@ function handle(cmd){
 
   else if(cmd==="TYPE README.TXT"){
     print("Recovered conference floppy.");
-    print("Some sectors failed. Deleted prize file may be recoverable.");
-    print("Use bad sector order to rebuild file.");
+    print("Deleted file can be rebuilt using bad sector order.");
+    print("Reconstruct the hidden word then run:");
+    print("REBUILD <word>");
   }
 
   else if(cmd==="TYPE BADSECT.LOG"){
-    print("Bad sectors detected:");
-    print("3");print("7");print("5");print("4");print("1");print("2");print("6");
+    print("Unreadable sectors (recovery order):");
+    print("3");print("1");print("5");print("2");print("4");
   }
 
   else if(cmd==="TYPE MAP.DAT"){
-    print("[1] PRIZE");
-    print("[2] IS");
-    print("[3] HIDDEN");
-    print("[4] NEAR");
-    print("[5] THE");
-    print("[6] FIND");
-    print("[7] PLANT");
+    print("[1] L");
+    print("[2] A");
+    print("[3] P");
+    print("[4] T");
+    print("[5] N");
   }
 
-  else if(cmd==="RECOVER PRIZE.BIN"){
-    print("Rebuilding deleted file...");
-    setTimeout(()=>{
-      print("Recovery complete.");
-      print("");
-      print("==== DECODED MESSAGE ====");
-      print("Nice work, hacker.");
-      print("Prize location:");
-      print(prizeLocation);
-      print("");
-      let name = prompt("Enter hacker handle for leaderboard:");
-      if(name && name.length>0){ addLeader(name); }
-      print("Leaderboard updated.");
-      print("If prize is gone, someone was faster 😈");
-      print("=========================");
-    },1200);
+  else if(cmd.startsWith("REBUILD")){
+    const parts = raw.split(" ");
+    if(parts.length<2){ print("Usage: REBUILD <word>"); return; }
+    const attempt = parts[1].toLowerCase();
+
+    if(attempt===FINAL_PHRASE){
+      success();
+    } else {
+      print("Rebuild failed. Word does not match recovered sectors.");
+    }
   }
+
   else{
     print("Bad command or file name");
   }
+}
+
+function success(){
+  print("Rebuilding deleted file...");
+  setTimeout(()=>{
+    print("Recovery successful.");
+    print("");
+    print("==== DISK RESTORED ====");
+    print("Nice work, hacker.");
+    print("Prize location:");
+    print(prizeLocation);
+    print("");
+    let name = prompt("Enter hacker handle for leaderboard:");
+    if(name && name.length>0){ addLeader(name); }
+    print("Leaderboard updated.");
+    print("=======================");
+  },1000);
 }
 
 showHelp();
