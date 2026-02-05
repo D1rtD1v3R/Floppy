@@ -1,1 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recovered Floppy - A:\\</title>
+<style>
+  body { background:black; color:#33ff33; font-family:"Courier New", monospace; padding:20px; }
+  #terminal { white-space:pre-wrap; line-height:1.4em; }
+  input { background:black; border:none; color:#33ff33; font-family:"Courier New", monospace; font-size:16px; width:90%; outline:none; }
+  .board { margin-top:30px; border-top:1px solid #33ff33; padding-top:15px; }
+</style>
+</head>
+<body>
+<div id="terminal"></div>
+<div>> <input id="cmd" autofocus /></div>
+<div class="board" id="leaderboard"></div>
 
+<script>
+const term = document.getElementById("terminal");
+const input = document.getElementById("cmd");
+const board = document.getElementById("leaderboard");
+
+function print(text=""){ term.innerHTML += text + "\n"; window.scrollTo(0,document.body.scrollHeight); }
+
+// ===== STATIC PRIZE LOCATION (EDIT BEFORE CON) =====
+const prizeLocation = "[SET LOCATION BEFORE DEF CON — ex: Large plant near main escalator 🌱]";
+
+// ===== LEADERBOARD (LOCAL PER DEVICE) =====
+function loadBoard(){
+  const data = JSON.parse(localStorage.getItem("floppy_leaders")||"[]");
+  board.innerHTML = "<b>🏆 FLOPPY DISK RECOVERY LEADERBOARD</b><br>";
+  if(data.length===0){ board.innerHTML += "No recoveries yet.<br>"; return; }
+  data.forEach((e,i)=>{
+    board.innerHTML += `${i+1}. ${e.name} — ${e.time}<br>`;
+  });
+}
+function addLeader(name){
+  const data = JSON.parse(localStorage.getItem("floppy_leaders")||"[]");
+  const time = new Date().toLocaleString();
+  data.push({name,time});
+  localStorage.setItem("floppy_leaders", JSON.stringify(data));
+  loadBoard();
+}
+loadBoard();
+
+// ===== TERMINAL BOOT =====
+print("Microsoft Floppy Disk Recovery Utility v3.1");
+print("Copyright (C) 1997 DiskCorp");
+print("");
+print("Scanning disk...");
+print("Recovered: README.TXT");
+print("Recovered: MAP.DAT");
+print("Recovered: BADSECT.LOG");
+print("Warning: Deleted file detected");
+print("");
+
+function showHelp(){
+  print("Commands:");
+  print("DIR");
+  print("TYPE README.TXT");
+  print("TYPE MAP.DAT");
+  print("TYPE BADSECT.LOG");
+  print("RECOVER PRIZE.BIN");
+  print("CLS");
+}
+
+input.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    const cmd=input.value.trim().toUpperCase();
+    print("> "+cmd);
+    handle(cmd);
+    input.value="";
+  }
+});
+
+function handle(cmd){
+  if(cmd==="DIR"){
+    print("README.TXT");
+    print("MAP.DAT");
+    print("BADSECT.LOG");
+    print("PRIZE.BIN <deleted>");
+  }
+  else if(cmd==="HELP") showHelp();
+  else if(cmd==="CLS") term.innerHTML="";
+
+  else if(cmd==="TYPE README.TXT"){
+    print("Recovered conference floppy.");
+    print("Some sectors failed. Deleted prize file may be recoverable.");
+    print("Use bad sector order to rebuild file.");
+  }
+
+  else if(cmd==="TYPE BADSECT.LOG"){
+    print("Bad sectors detected:");
+    print("3");print("7");print("5");print("4");print("1");print("2");print("6");
+  }
+
+  else if(cmd==="TYPE MAP.DAT"){
+    print("[1] PRIZE");
+    print("[2] IS");
+    print("[3] HIDDEN");
+    print("[4] NEAR");
+    print("[5] THE");
+    print("[6] FIND");
+    print("[7] PLANT");
+  }
+
+  else if(cmd==="RECOVER PRIZE.BIN"){
+    print("Rebuilding deleted file...");
+    setTimeout(()=>{
+      print("Recovery complete.");
+      print("");
+      print("==== DECODED MESSAGE ====");
+      print("Nice work, hacker.");
+      print("Prize location:");
+      print(prizeLocation);
+      print("");
+      let name = prompt("Enter hacker handle for leaderboard:");
+      if(name && name.length>0){ addLeader(name); }
+      print("Leaderboard updated.");
+      print("If prize is gone, someone was faster 😈");
+      print("=========================");
+    },1200);
+  }
+  else{
+    print("Bad command or file name");
+  }
+}
+
+showHelp();
+</script>
+</body>
+</html>
