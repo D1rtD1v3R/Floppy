@@ -24,7 +24,7 @@ const board = document.getElementById("leaderboard");
 function print(text=""){ term.innerHTML += text + "\n"; window.scrollTo(0,document.body.scrollHeight); }
 
 // ===== EDIT THIS BEFORE DEF CON =====
-const FINAL_PHRASE = "plant";  // answer players must reconstruct
+const FINAL_PHRASE = "hackers";  // answer players must reconstruct
 const prizeLocation = "[EDIT BEFORE DEF CON — example: Large plant near escalator]";
 
 // ===== LEADERBOARD =====
@@ -80,8 +80,8 @@ input.addEventListener("keydown", e=>{
 function handle(raw,cmd){
   if(cmd==="DIR"){
     print("README.TXT");
-    print("MAP.DAT");
     print("BADSECT.LOG");
+    print("MAP.DAT");
     print("PRIZE.BIN <deleted>");
   }
   else if(cmd==="HELP") showHelp();
@@ -100,11 +100,13 @@ function handle(raw,cmd){
   }
 
   else if(cmd==="TYPE MAP.DAT"){
-    print("[1] L");
-    print("[2] A");
-    print("[3] P");
-    print("[4] T");
-    print("[5] N");
+    print("[1] c");
+    print("[2] r");
+    print("[3] a");
+    print("[4] e");
+    print("[5] h");
+    print("[6] k");
+    print("[7] s");
   }
 
   else if(cmd.startsWith("REBUILD")){
