@@ -25,12 +25,12 @@ function scan(){
   }
 
   if(scans === 3){
-    print("<br>✔ PARTIAL DIRECTORY RECOVERED");
+    print("<br>✔PARTIAL DIRECTORY RECOVERED");
     print("Hidden partition detected...");
   }
 
   if(scans === 5){
-    print("<br>✔ FULL RECOVERY COMPLETE");
+    print("<br>✔FULL RECOVERY COMPLETE");
     print("Filesystem mounted.");
     print("<br>PASSWORD: <b>sector7</b>");
     print("<br><a href='stage2.html'>Open recovered filesystem</a>");
