@@ -1,1 +1,21 @@
+body {
+  background:black;
+  color:#33ff33;
+  font-family: monospace;
+  padding:40px;
+}
 
+.terminal {
+  border:2px solid #33ff33;
+  padding:20px;
+  max-width:700px;
+}
+
+button {
+  background:black;
+  color:#33ff33;
+  border:1px solid #33ff33;
+  padding:10px;
+  margin-top:15px;
+  cursor:pointer;
+}
