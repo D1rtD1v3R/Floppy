@@ -8,8 +8,6 @@ function print(msg){
   output.innerHTML += msg + "<br>";
 }
 
-print("Insert disk and run recovery.");
-
 function scan(){
   scans++;
   localStorage.setItem("floppy_scans", scans);
@@ -17,22 +15,31 @@ function scan(){
   output.innerHTML = "";
 
   print("Scanning disk...");
-  print("Recovered sector: " + (scans * 12) + "%");
+  print("Recovered sector integrity: " + (scans * 17) + "%");
 
   if(scans < 3){
     print("Disk unstable. Re-scan required.");
-    print("Hint: multiple passes improve recovery.");
+    print("Hint: repeated scans improve recovery.");
   }
 
-  if(scans === 3){
-    print("<br>✔PARTIAL DIRECTORY RECOVERED");
+  else if(scans === 3){
+    print("<br>✔ PARTIAL DIRECTORY RECOVERED");
     print("Hidden partition detected...");
+    print("Continue scanning.");
   }
 
-  if(scans === 5){
-    print("<br>✔FULL RECOVERY COMPLETE");
+  else if(scans < 5){
+    print("<br>Reconstructing FAT...");
+    print("More passes required.");
+  }
+
+  else if(scans >= 5){
+    print("<br>✔ FULL RECOVERY COMPLETE");
     print("Filesystem mounted.");
-    print("<br>PASSWORD: <b>sector7</b>");
-    print("<br><a href='stage2.html'>Open recovered filesystem</a>");
+    print("<br>PASSWORD RECOVERED: <b>sector7</b>");
+    print("<br><a href='stage2.html'>Mount recovered filesystem</a>");
   }
 }
+
+// 🔥 THIS is the key line for NFC multi-scan
+window.onload = scan;
