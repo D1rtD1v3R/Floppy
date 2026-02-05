@@ -60,9 +60,9 @@ print("");
 function showHelp(){
   print("Commands:");
   print("DIR");
-  print("TYPE README.TXT");
-  print("TYPE MAP.DAT");
-  print("TYPE BADSECT.LOG");
+  print("README.TXT");
+  print("MAP.DAT");
+  print("BADSECT.LOG");
   print("REBUILD <word>");
   print("CLS");
 }
@@ -87,19 +87,19 @@ function handle(raw,cmd){
   else if(cmd==="HELP") showHelp();
   else if(cmd==="CLS") term.innerHTML="";
 
-  else if(cmd==="TYPE README.TXT"){
+  else if(cmd==="README.TXT"){
     print("Recovered conference floppy.");
     print("Deleted file can be rebuilt using bad sector order.");
     print("Reconstruct the hidden word then run:");
     print("REBUILD <word>");
   }
 
-  else if(cmd==="TYPE BADSECT.LOG"){
+  else if(cmd==="BADSECT.LOG"){
     print("Unreadable sectors (recovery order):");
-    print("3");print("1");print("5");print("2");print("4");
+    print("5");print("3");print("1");print("6");print("4");print("2");print("7");
   }
 
-  else if(cmd==="TYPE MAP.DAT"){
+  else if(cmd==="MAP.DAT"){
     print("[1] c");
     print("[2] r");
     print("[3] a");
