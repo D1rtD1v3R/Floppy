@@ -93,6 +93,4 @@ function submitFlag() {
 
     alert("Invalid flag.");
 
-    document.getElementById("submitBtn")
-    .addEventListener("click", submitFlag);
 }
