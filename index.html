@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Floppy Recovery Utility</title>
+  <meta charset="UTF-8">
+  <title>Firmware Recovery Utility v1.3</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="terminal">
-  <h2>FLOPPY RECOVERY TOOL v1.3</h2>
+  <h2>Firmware Recovery Utility v1.3</h2>
   <div id="output"></div>
-  <!--<button onclick="scan()">Run Sector Recovery</button>/-->
+
+  <div id="fileArea" style="display:none;">
+    <p>/mnt/hidden/flag.enc</p>
+    <button onclick="showFlag()">open flag.enc</button>
+  </div>
+
+  <div id="flagContent"></div>
+
+  <div id="submission" style="display:none;">
+    <input id="playerName" placeholder="Enter handle">
+    <input id="flagInput" placeholder="Enter flag">
+    <button onclick="submitFlag()">Submit</button>
+  </div>
+
+  <div id="leaderboard"></div>
 </div>
 
+<!-- XOR_KEY: 13 -->
+<!-- FLAG: ADMIN_OVERRIDE -->
+
 <script src="script.js"></script>
+<script src="leaderboard.js"></script>
 </body>
 </html>
