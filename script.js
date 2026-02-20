@@ -44,8 +44,14 @@ function showFlag() {
 
 // Fragment generator (deterministic)
 function generateFragment(scan) {
-    const base = "DEFCON34";
-    return btoa(base + scan).substring(0, 4);
+    const seed = "DEFCON34";
+    const str = seed + scan;
+    let hash = 0;
+    for(let i=0;i<str.length;i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) % 1000000000;
+    }
+    let fragment = ("000000" + hash.toString(36)).slice(-6);
+    return fragment.toUpperCase();
 }
 
 // Firmware reconstruction
