@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
-const SUPABASE_KEY = "sb_publishable_781A6kZECyII1czXFDPSFA_nhwOXzkD";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRyYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
 
 async function submitSolve(name, layer, time) {
     await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
