@@ -1,45 +1,95 @@
-let scans = localStorage.getItem("floppy_scans");
-if (!scans) scans = 0;
-scans = parseInt(scans);
-
 const output = document.getElementById("output");
 
-function print(msg){
-  output.innerHTML += msg + "<br>";
+let scanCount = parseInt(localStorage.getItem("scanCount") || "0");
+scanCount++;
+localStorage.setItem("scanCount", scanCount);
+
+// Start timer
+if (!localStorage.getItem("startTime")) {
+    localStorage.setItem("startTime", Date.now());
 }
 
-function scan(){
-  scans++;
-  localStorage.setItem("floppy_scans", scans);
+// Track firmware fragments
+let fw = JSON.parse(localStorage.getItem("fw") || "[]");
+fw.push(generateFragment(scanCount));
+localStorage.setItem("fw", JSON.stringify(fw));
 
-  output.innerHTML = "";
+// Mild fingerprint
+window.__firmwareHash = btoa(navigator.userAgent).substring(0, 8);
 
-  print("Scanning disk...");
-  print("Recovered sector integrity: " + (scans * 17) + "%");
-
-  if(scans < 3){
-    print("Disk unstable. Re-scan required.");
-    print("Hint: repeated scans improve recovery.");
-  }
-
-  else if(scans === 3){
-    print("<br>✔PARTIAL DIRECTORY RECOVERED");
-    print("Hidden partition detected...");
-    print("Continue scanning.");
-  }
-
-  else if(scans < 5){
-    print("<br>Reconstructing FAT...");
-    print("More passes required.");
-  }
-
-  else if(scans >= 5){
-    print("<br>✔FULL RECOVERY COMPLETE");
-    print("Filesystem mounted.");
-    print("<br>PASSWORD RECOVERED: <b>sector7</b>");
-    print("<br><a href='stage2.html'>Mount recovered filesystem</a>");
-  }
+// Display progression
+if (scanCount === 1) {
+    output.innerHTML = "FIRMWARE CHECKSUM ERROR<br>Sector 0 unreadable.";
+}
+else if (scanCount === 2) {
+    output.innerHTML = "Recovery mode enabled... Restoring sector 0.";
+}
+else if (scanCount === 3) {
+    output.innerHTML = "Recovery complete.<br>Hidden partition mounted.";
+    document.getElementById("fileArea").style.display = "block";
+    document.getElementById("submission").style.display = "block";
+}
+else {
+    output.innerHTML = "Firmware instability detected...";
+    if (fw.length >= 6) {
+        console.log("Integrity mismatch detected. Manual override required.");
+    }
 }
 
-//THIS is the key line for NFC multi-scan
-window.onload = scan;
+// Beginner flag display
+function showFlag() {
+    document.getElementById("flagContent").innerText =
+        "UkVDT1ZFUl9DT01QTEVURQ==";
+}
+
+// Fragment generator (deterministic)
+function generateFragment(scan) {
+    const base = "DEFCON215";
+    return btoa(base + scan).substring(0, 4);
+}
+
+// Firmware reconstruction
+function calculateFirmware() {
+    let fw = JSON.parse(localStorage.getItem("fw") || "[]");
+    return fw.join("");
+}
+
+// XOR helper
+function xorDecode(str, key) {
+    return str.split("").map(c =>
+        String.fromCharCode(c.charCodeAt(0) ^ key)
+    ).join("");
+}
+
+// Submission logic
+function submitFlag() {
+    let name = document.getElementById("playerName").value;
+    let flag = document.getElementById("flagInput").value;
+    let solveTime = Date.now() - parseInt(localStorage.getItem("startTime"));
+
+    if (flag === "ADMIN_OVERRIDE") {
+        alert("Nice try. Scan the hardware.");
+        return;
+    }
+
+    if (solveTime < 15000) {
+        alert("Firmware anomaly detected. Too fast.");
+        return;
+    }
+
+    if (flag === "RECOVER_COMPLETE" && scanCount >= 3) {
+        submitSolve(name, "A", solveTime);
+        return;
+    }
+
+    // Elite layer
+    let reconstructed = calculateFirmware();
+    let decoded = xorDecode(reconstructed, 13);
+
+    if (flag === decoded && fw.length >= 6) {
+        submitSolve(name, "B", solveTime);
+        return;
+    }
+
+    alert("Invalid flag.");
+}
