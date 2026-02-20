@@ -45,13 +45,12 @@ function showFlag() {
 // Fragment generator (deterministic)
 function generateFragment(scan) {
     const seed = "DEFCON34";
-    const str = seed + scan;
     let hash = 0;
-    for(let i=0;i<str.length;i++) {
-        hash = (hash * 31 + str.charCodeAt(i)) % 1000000000;
+    for (let i = 0; i < seed.length; i++) {
+        hash = (hash * 31 + seed.charCodeAt(i)) % 1000000000;
     }
-    let fragment = ("000000" + hash.toString(36)).slice(-6);
-    return fragment.toUpperCase();
+    hash = (hash + scan * 7) % 1000000000; // ensure each scan is unique
+    return ("000000" + hash.toString(36)).slice(-6).toUpperCase();
 }
 
 // Firmware reconstruction
