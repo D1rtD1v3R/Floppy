@@ -44,7 +44,7 @@ function showFlag() {
 
 // Fragment generator (deterministic)
 function generateFragment(scan) {
-    const base = "DEFCON215";
+    const base = "DEFCON34";
     return btoa(base + scan).substring(0, 4);
 }
 
