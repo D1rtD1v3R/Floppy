@@ -22,8 +22,16 @@ async function submitSolve(name, layer, time) {
 }
 
 async function loadLeaderboard() {
-    let res = await fetch(`${SUPABASE_URL}/rest/v1/solves?order=time_ms.asc`);
-    let data = await res.json();
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/solves?order=time_ms.asc`, {
+        method: "GET",
+        headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json"
+        }
+    });
+
+    const data = await res.json();
 
     let html = "<h3>Leaderboard</h3>";
     data.forEach(row => {
