@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
-const SUPABASE_KEY = "Psb_publishable_781A6kZECyII1czXFDPSFA_nhwOXzkD";
+const SUPABASE_KEY = "781A6kZECyII1czXFDPSFA_nhwOXzkD";
 
 async function submitSolve(name, layer, time) {
     await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
