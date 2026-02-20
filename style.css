@@ -23,3 +23,13 @@ input {
   border: 1px solid #00ff88;
   padding: 5px;
 }
+
+@keyframes glitch {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+h2 {
+  animation: glitch 1.5s infinite;
+}
