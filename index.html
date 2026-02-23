@@ -1,36 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Firmware Recovery Utility v1.3</title>
-  <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floppy Recovery Utility</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="terminal">
-  <h2>Firmware Recovery Utility v1.3</h2>
-  <div id="output"></div>
+<h2>FLOPPY RECOVERY UTILITY</h2>
 
-  <div id="fileArea" style="display:none;">
-    <p>/mnt/hidden/flag.enc</p>
-    <button onclick="showFlag()">open flag.enc</button>
-  </div>
-
-  <div id="flagContent"></div>
-
-  <div id="submission" style="display:none;">
-    <input id="playerName" placeholder="Enter handle">
-    <input id="flagInput" placeholder="Enter flag">
-    <button onclick="submitFlag()">Submit</button>
-  </div>
-
-  <div id="leaderboard"></div>
+<div id="output">
+Scan NFC sectors to recover firmware...
 </div>
 
-<!-- XOR_KEY: 13 -->
-<!-- FLAG: ADMIN_OVERRIDE -->
+<div id="submission" style="display:none;">
+  <input id="playerName" placeholder="Enter handle">
+  <input id="flagInput" placeholder="Enter decoded flag">
+  <button id="submitBtn">Submit</button>
+</div>
+
+<div id="leaderboard">
+  <h3>Leaderboard</h3>
+  Loading...
+</div>
 
 <script src="script.js"></script>
-<script src="leaderboard.js"></script>
 </body>
 </html>
