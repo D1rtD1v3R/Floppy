@@ -1,101 +1,93 @@
-const output = document.getElementById("output");
+// ---------------- CONFIG ----------------
+const SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co"";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRyYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
 
+// Final correct flag
+const CORRECT_FLAG = "RECOVER_COMPLETE";
+
+// Hex fragments (Caesar+3 encoded)
+const fragments = [
+  "55484652",
+  "5948555F4652",
+  "50534F485748"
+];
+
+// ---------------- SCAN LOGIC ----------------
 let scanCount = parseInt(localStorage.getItem("scanCount") || "0");
 scanCount++;
 localStorage.setItem("scanCount", scanCount);
 
-// Start timer
-if (!localStorage.getItem("startTime")) {
-    localStorage.setItem("startTime", Date.now());
+if(!localStorage.getItem("startTime")) {
+  localStorage.setItem("startTime", Date.now());
 }
 
-// Track firmware fragments
-let fw = JSON.parse(localStorage.getItem("fw") || "[]");
-fw.push(generateFragment(scanCount));
-localStorage.setItem("fw", JSON.stringify(fw));
+const output = document.getElementById("output");
+const submission = document.getElementById("submission");
 
-// Mild fingerprint
-window.__firmwareHash = btoa(navigator.userAgent).substring(0, 8);
-
-// Display progression
-if (scanCount === 1) {
-    output.innerHTML = "FIRMWARE CHECKSUM ERROR<br>Sector 0 unreadable.";
-}
-else if (scanCount === 2) {
-    output.innerHTML = "Recovery mode enabled... Restoring sector 0.";
-}
-else if (scanCount === 3) {
-    output.innerHTML = "Recovery complete.<br>Hidden partition mounted.";
-    document.getElementById("fileArea").style.display = "block";
-    document.getElementById("submission").style.display = "block";
-}
-else {
-    output.innerHTML = "Firmware instability detected...";
-    if (fw.length >= 6) {
-        console.log("Integrity mismatch detected. Manual override required.");
-    }
+if(scanCount <= fragments.length) {
+  output.innerHTML = `
+    Sector ${scanCount} recovered:<br><br>
+    <b>${fragments[scanCount-1]}</b>
+  `;
+} else {
+  output.innerHTML = `
+    All sectors recovered.<br>
+    Assemble fragments and decode.<br>
+    Hint: Caesar shift = 3
+  `;
+  submission.style.display = "block";
 }
 
-// Beginner flag display
-function showFlag() {
-    document.getElementById("flagContent").innerText =
-        "UkVDT1ZFUl9DT01QTEVURQ==";
-}
+// ---------------- SUBMIT LOGIC ----------------
+document.getElementById("submitBtn").addEventListener("click", async () => {
 
-// Fragment generator (deterministic)
-function generateFragment(scan) {
-    const seed = "DEFCON34";
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-        hash = (hash * 31 + seed.charCodeAt(i)) % 1000000000;
-    }
-    hash = (hash + scan * 7) % 1000000000; // ensure each scan is unique
-    return ("000000" + hash.toString(36)).slice(-6).toUpperCase();
-}
+  const name = document.getElementById("playerName").value.trim();
+  const flag = document.getElementById("flagInput").value.trim().toUpperCase();
+  const solveTime = Date.now() - parseInt(localStorage.getItem("startTime"));
 
-// Firmware reconstruction
-function calculateFirmware() {
-    let fw = JSON.parse(localStorage.getItem("fw") || "[]");
-    return fw.join("");
-}
+  if(!name){
+    alert("Enter a handle.");
+    return;
+  }
 
-// XOR helper
-function xorDecode(str, key) {
-    return str.split("").map(c =>
-        String.fromCharCode(c.charCodeAt(0) ^ key)
-    ).join("");
-}
-
-// Submission logic
-function submitFlag() {
-    let name = document.getElementById("playerName").value;
-    let flag = document.getElementById("flagInput").value;
-    let solveTime = Date.now() - parseInt(localStorage.getItem("startTime"));
-
-    if (flag === "ADMIN_OVERRIDE") {
-        alert("Nice try. Scan the hardware.");
-        return;
-    }
-
-    if (solveTime < 15000) {
-        alert("Firmware anomaly detected. Too fast.");
-        return;
-    }
-
-    if (flag === "RECOVER_COMPLETE" && scanCount >= 3) {
-        submitSolve(name, "A", solveTime);
-        return;
-    }
-
-    // Elite layer
-    let reconstructed = calculateFirmware();
-    let decoded = xorDecode(reconstructed, 13);
-
-    if (flag === decoded && fw.length >= 6) {
-        submitSolve(name, "B", solveTime);
-        return;
-    }
-
+  if(flag === CORRECT_FLAG && scanCount >= fragments.length){
+    await submitSolve(name, solveTime);
+    alert("Firmware Restored.");
+  } else {
     alert("Invalid flag.");
+  }
+});
 
+// ---------------- LEADERBOARD ----------------
+async function submitSolve(name, time) {
+  await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=minimal"
+    },
+    body: JSON.stringify({
+      name,
+      layer: "HEX-CAESAR",
+      time_ms: time
+    })
+  });
+
+  loadLeaderboard();
 }
+
+async function loadLeaderboard() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/solves?order=time_ms.asc`);
+  const data = await res.json();
+
+  let html = "<h3>Leaderboard</h3>";
+  data.forEach(row => {
+    html += `${row.name} | ${Math.floor(row.time_ms/1000)}s<br>`;
+  });
+
+  document.getElementById("leaderboard").innerHTML = html;
+}
+
+loadLeaderboard();
