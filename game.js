@@ -1,20 +1,19 @@
-// Replace with your Supabase credentials
+// Supabase credentials
 const SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRiYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
 
 // Hex fragments to reveal
-const fragments = ['4142', '435A', '4C4B', '3334'];
+const fragments = ["4142", "435A", "4C4B", "3334"];
 let startTime = null;
 
-// On page load
 window.addEventListener("DOMContentLoaded", () => {
     handleScan();
 });
 
 async function handleScan() {
-
-    const disk = new URLSearchParams(window.location.search).get("disk");
-    const player = new URLSearchParams(window.location.search).get("player") || 'Anonymous';
+    const urlParams = new URLSearchParams(window.location.search);
+    const disk = urlParams.get("disk");
+    const player = urlParams.get("player") || "Anonymous";
 
     if (!disk) {
         document.getElementById("status").innerText = "No disk ID in URL!";
@@ -24,7 +23,7 @@ async function handleScan() {
     if (!startTime) startTime = Date.now();
 
     try {
-        // Supabase REST requires single quotes for string equality
+        // Query solves table for this disk + player
         const diskParam = encodeURIComponent(disk);
         const playerParam = encodeURIComponent(player);
 
@@ -36,14 +35,15 @@ async function handleScan() {
         });
 
         const data = await res.json();
-        console.log("Query result:", data);  // Debug
+        console.log("Query result:", data); // Debug
 
         const scanCount = data.length;
 
         if (scanCount < fragments.length) {
+            // Reveal next fragment
             revealFragment(scanCount);
 
-            // Insert new scan row
+            // Insert a new row to track this scan
             await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
                 method: "POST",
                 headers: {
@@ -61,13 +61,13 @@ async function handleScan() {
             });
         } else {
             // All fragments recovered
-            document.getElementById("decodeSection").style.display = 'block';
-            document.getElementById("output").innerHTML += '<p>All sectors recovered. Decode the hex. Apply Caesar shift.</p>';
+            document.getElementById("decodeSection").style.display = "block";
+            document.getElementById("output").innerHTML += `<p>All sectors recovered. Decode the hex. Apply Caesar shift.</p>`;
         }
 
     } catch (err) {
-        console.error("Error querying Supabase:", err);
-        document.getElementById("status").innerText = 'Error accessing database. Check console.';
+        console.error("Supabase error:", err);
+        document.getElementById("status").innerText = "Error accessing database. Check console.";
     }
 }
 
@@ -80,9 +80,9 @@ async function submitFlag() {
     const name = document.getElementById("playerName").value.trim();
     const flag = document.getElementById("flagInput").value.trim().toUpperCase();
 
-    if (!name || !flag) { alert('Enter name and flag.'); return; }
+    if (!name || !flag) { alert("Enter name and flag."); return; }
 
-    if (flag === 'DEFCON34') {
+    if (flag === "DEFCON34") {
         const timeTaken = Date.now() - startTime;
 
         // Use your existing leaderboard.js function
@@ -97,6 +97,6 @@ async function submitFlag() {
 
 function resetGame() {
     document.getElementById("output").innerHTML = "";
-    document.getElementById("decodeSection").style.display = 'none';
+    document.getElementById("decodeSection").style.display = "none";
     startTime = null;
 }
