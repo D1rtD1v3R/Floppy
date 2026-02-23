@@ -1,4 +1,4 @@
-// Supabase credentials
+// Supabase credentials (unique variable names to avoid conflicts)
 const GAME_SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
 const GAME_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRiYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
 
@@ -6,6 +6,7 @@ const GAME_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 const fragments = ["4142", "435A", "4C4B", "3334"];
 let startTime = null;
 
+// Run on page load
 window.addEventListener("DOMContentLoaded", () => {
     handleScan();
 });
@@ -23,10 +24,27 @@ async function handleScan() {
     if (!startTime) startTime = Date.now();
 
     try {
-        // Query solves table for this disk + player
         const diskParam = encodeURIComponent(disk);
         const playerParam = encodeURIComponent(player);
 
+        // Insert a new scan row first
+        await fetch(`${GAME_SUPABASE_URL}/rest/v1/solves`, {
+            method: "POST",
+            headers: {
+                "apikey": GAME_SUPABASE_KEY,
+                "Content-Type": "application/json",
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify({
+                name: player,
+                layer: null,  // layer tracked by count
+                time_ms: null,
+                disk: disk,
+                hash: "scan"
+            })
+        });
+
+        // Query the table again to get updated scan count
         const res = await fetch(`${GAME_SUPABASE_URL}/rest/v1/solves?disk=eq.'${diskParam}'&name=eq.'${playerParam}'`, {
             headers: {
                 "apikey": GAME_SUPABASE_KEY,
@@ -36,31 +54,15 @@ async function handleScan() {
 
         const data = await res.json();
         console.log("Query result:", data); // Debug
-
         const scanCount = data.length;
 
-        if (scanCount < fragments.length) {
-            // Reveal next fragment
-            revealFragment(scanCount);
+        // Reveal fragment for this scan
+        if (scanCount <= fragments.length) {
+            revealFragment(scanCount - 1); // zero-based index
+        }
 
-            // Insert a new row to track this scan
-            await fetch(`${GAME_SUPABASE_URL}/rest/v1/solves`, {
-                method: "POST",
-                headers: {
-                    "apikey": GAME_SUPABASE_KEY,
-                    "Content-Type": "application/json",
-                    "Prefer": "return=minimal"
-                },
-                body: JSON.stringify({
-                    name: player,
-                    layer: scanCount + 1,
-                    time_ms: null,
-                    disk: disk,
-                    hash: "scan"
-                })
-            });
-        } else {
-            // All fragments recovered
+        // Show decode section if all fragments recovered
+        if (scanCount >= fragments.length) {
             document.getElementById("decodeSection").style.display = "block";
             document.getElementById("output").innerHTML += `<p>All sectors recovered. Decode the hex. Apply Caesar shift.</p>`;
         }
