@@ -3,7 +3,7 @@ const SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRiYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
 
 // Hex fragments to reveal
-const fragments = ["4142", "435A", "4C4B", "3334"];
+const fragments = ['4142', '435A', '4C4B', '3334'];
 let startTime = null;
 
 // On page load
@@ -14,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
 async function handleScan() {
 
     const disk = new URLSearchParams(window.location.search).get("disk");
-    const player = new URLSearchParams(window.location.search).get("player") || "Anonymous";
+    const player = new URLSearchParams(window.location.search).get("player") || 'Anonymous';
 
     if (!disk) {
         document.getElementById("status").innerText = "No disk ID in URL!";
@@ -61,13 +61,13 @@ async function handleScan() {
             });
         } else {
             // All fragments recovered
-            document.getElementById("decodeSection").style.display = "block";
-            document.getElementById("output").innerHTML += `<p>All sectors recovered. Decode the hex. Apply Caesar shift.</p>`;
+            document.getElementById("decodeSection").style.display = 'block';
+            document.getElementById("output").innerHTML += '<p>All sectors recovered. Decode the hex. Apply Caesar shift.</p>';
         }
 
     } catch (err) {
         console.error("Error querying Supabase:", err);
-        document.getElementById("status").innerText = "Error accessing database. Check console.";
+        document.getElementById("status").innerText = 'Error accessing database. Check console.';
     }
 }
 
@@ -80,9 +80,9 @@ async function submitFlag() {
     const name = document.getElementById("playerName").value.trim();
     const flag = document.getElementById("flagInput").value.trim().toUpperCase();
 
-    if (!name || !flag) { alert("Enter name and flag."); return; }
+    if (!name || !flag) { alert('Enter name and flag.'); return; }
 
-    if (flag === "DEFCON34") {
+    if (flag === 'DEFCON34') {
         const timeTaken = Date.now() - startTime;
 
         // Use your existing leaderboard.js function
@@ -97,6 +97,6 @@ async function submitFlag() {
 
 function resetGame() {
     document.getElementById("output").innerHTML = "";
-    document.getElementById("decodeSection").style.display = "none";
+    document.getElementById("decodeSection").style.display = 'none';
     startTime = null;
 }
