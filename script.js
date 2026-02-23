@@ -59,35 +59,45 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
 });
 
 // ---------------- LEADERBOARD ----------------
-async function submitSolve(name, time) {
-  await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
-    method: "POST",
-    headers: {
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
-      "Content-Type": "application/json",
-      "Prefer": "return=minimal"
-    },
-    body: JSON.stringify({
-      name,
-      layer: "HEX-CAESAR",
-      time_ms: time
-    })
-  });
+async function submitSolve(name, layer, time) {
+    await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
+        method: "POST",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+            name,
+            layer,
+            time_ms: time,
+            disk: new URLSearchParams(window.location.search).get("disk"),
+            hash: window.__firmwareHash
+        })
+    });
 
-  loadLeaderboard();
+    loadLeaderboard();
 }
 
 async function loadLeaderboard() {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/solves?order=time_ms.asc`);
-  const data = await res.json();
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/solves?order=time_ms.asc`, {
+        method: "GET",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json"
+        }
+    });
 
-  let html = "<h3>Leaderboard</h3>";
-  data.forEach(row => {
-    html += `${row.name} | ${Math.floor(row.time_ms/1000)}s<br>`;
-  });
+    const data = await res.json();
 
-  document.getElementById("leaderboard").innerHTML = html;
+    let html = "<h3>Leaderboard</h3>";
+    data.forEach(row => {
+        html += `${row.name} | Layer ${row.layer} | ${row.time_ms}ms<br>`;
+    });
+
+    document.getElementById("leaderboard").innerHTML = html;
 }
-window.onload = scanCount;
+
 loadLeaderboard();
+window.onload = scanCount;
