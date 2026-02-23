@@ -1,6 +1,6 @@
 // Supabase credentials
-// const SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
-// const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRiYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
+const GAME_SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
+const GAME_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRiYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
 
 // Hex fragments to reveal
 const fragments = ["4142", "435A", "4C4B", "3334"];
@@ -27,10 +27,10 @@ async function handleScan() {
         const diskParam = encodeURIComponent(disk);
         const playerParam = encodeURIComponent(player);
 
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/solves?disk=eq.'${diskParam}'&name=eq.'${playerParam}'`, {
+        const res = await fetch(`${GAME_SUPABASE_URL}/rest/v1/solves?disk=eq.'${diskParam}'&name=eq.'${playerParam}'`, {
             headers: {
-                "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`
+                "apikey": GAME_SUPABASE_KEY,
+                "Authorization": `Bearer ${GAME_SUPABASE_KEY}`
             }
         });
 
@@ -44,10 +44,10 @@ async function handleScan() {
             revealFragment(scanCount);
 
             // Insert a new row to track this scan
-            await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
+            await fetch(`${GAME_SUPABASE_URL}/rest/v1/solves`, {
                 method: "POST",
                 headers: {
-                    "apikey": SUPABASE_KEY,
+                    "apikey": GAME_SUPABASE_KEY,
                     "Content-Type": "application/json",
                     "Prefer": "return=minimal"
                 },
