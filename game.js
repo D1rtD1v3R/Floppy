@@ -1,12 +1,12 @@
-// Your Supabase credentials
+// Replace with your Supabase credentials
 const SUPABASE_URL = "https://fdadrbabrltenjscdfhn.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRyYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWRiYmFicmx0ZW5qc2NkZmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTgyOTgsImV4cCI6MjA4NzE5NDI5OH0.oF17odQgc9IveuqlmF1bsJCIi5Jqdtry4B8ppg-M3Jg";
 
 // Hex fragments to reveal
 const fragments = ["4142", "435A", "4C4B", "3334"];
 let startTime = null;
 
-// Run on page load
+// On page load
 window.addEventListener("DOMContentLoaded", () => {
     handleScan();
 });
@@ -23,41 +23,51 @@ async function handleScan() {
 
     if (!startTime) startTime = Date.now();
 
-    // 1️⃣ Query solves table for this disk + player to count existing scans
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/solves?disk=eq.${disk}&name=eq.${player}`, {
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
-    });
+    try {
+        // Supabase REST requires single quotes for string equality
+        const diskParam = encodeURIComponent(disk);
+        const playerParam = encodeURIComponent(player);
 
-    const data = await res.json();
-    const scanCount = data.length; // how many scans already done
-
-    // 2️⃣ Reveal fragment if there are still unrevealed ones
-    if (scanCount < fragments.length) {
-        revealFragment(scanCount);
-
-        // 3️⃣ Insert a new row to track this scan
-        await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
-            method: "POST",
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/solves?disk=eq.'${diskParam}'&name=eq.'${playerParam}'`, {
             headers: {
                 "apikey": SUPABASE_KEY,
-                "Content-Type": "application/json",
-                "Prefer": "return=minimal"
-            },
-            body: JSON.stringify({
-                name: player,
-                layer: scanCount + 1,
-                time_ms: null,
-                disk: disk,
-                hash: "scan"
-            })
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
         });
-    } else {
-        // All fragments done
-        document.getElementById("decodeSection").style.display = "block";
-        document.getElementById("output").innerHTML += `<p>All sectors recovered. Decode the hex. Apply Caesar shift.</p>`;
+
+        const data = await res.json();
+        console.log("Query result:", data);  // Debug
+
+        const scanCount = data.length;
+
+        if (scanCount < fragments.length) {
+            revealFragment(scanCount);
+
+            // Insert new scan row
+            await fetch(`${SUPABASE_URL}/rest/v1/solves`, {
+                method: "POST",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal"
+                },
+                body: JSON.stringify({
+                    name: player,
+                    layer: scanCount + 1,
+                    time_ms: null,
+                    disk: disk,
+                    hash: "scan"
+                })
+            });
+        } else {
+            // All fragments recovered
+            document.getElementById("decodeSection").style.display = "block";
+            document.getElementById("output").innerHTML += `<p>All sectors recovered. Decode the hex. Apply Caesar shift.</p>`;
+        }
+
+    } catch (err) {
+        console.error("Error querying Supabase:", err);
+        document.getElementById("status").innerText = "Error accessing database. Check console.";
     }
 }
 
