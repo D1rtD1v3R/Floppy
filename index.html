@@ -1,29 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floppy Recovery Utility</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Floppy Disk Recovery</title>
+    <style>
+        body {
+            background: black;
+            color: #00ff88;
+            font-family: monospace;
+            text-align: center;
+            padding: 40px;
+        }
+
+        button {
+            background: #111;
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        input {
+            background: #111;
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            padding: 8px;
+            margin: 5px;
+        }
+
+        #output { margin-top: 20px; }
+        #leaderboard { margin-top: 40px; }
+    </style>
 </head>
 <body>
 
-<h2>FLOPPY RECOVERY UTILITY</h2>
+<h1>Disk Recovery Interface</h1>
 
-<div id="output">
-Scan NFC sectors to recover firmware...
+<div id="status">
+    Scan your disk NFC tag to continue. On iPhone, tap the NFC notification to open this page.
 </div>
 
-<div id="submission" style="display:none;">
-  <input id="playerName" placeholder="Enter handle">
-  <input id="flagInput" placeholder="Enter decoded flag">
-  <button id="submitBtn">Submit</button>
+<div id="output"></div>
+
+<div id="decodeSection" style="display:none;">
+    <h3>Enter Final Flag</h3>
+    <input id="playerName" placeholder="Your Name">
+    <input id="flagInput" placeholder="Decoded Flag">
+    <button onclick="submitFlag()">Submit</button>
 </div>
 
-<div id="leaderboard">
-  <h3>Leaderboard</h3>
-  Loading...
-</div>
+<div id="leaderboard"></div>
 
-<script src="script.js"></script> 
+<script src="leaderboard.js"></script>
+<script src="game.js"></script>
+
 </body>
 </html>
