@@ -13,29 +13,33 @@ const fragments = [
 ];
 
 // ---------------- SCAN LOGIC ----------------
-let scanCount = parseInt(localStorage.getItem("scanCount") || "0");
-scanCount++;
-localStorage.setItem("scanCount", scanCount);
 
-if(!localStorage.getItem("startTime")) {
-  localStorage.setItem("startTime", Date.now());
-}
+function handleScan() {
 
-const output = document.getElementById("output");
-const submission = document.getElementById("submission");
+  let scanCount = parseInt(localStorage.getItem("scanCount") || "0");
+  scanCount++;
+  localStorage.setItem("scanCount", scanCount);
 
-if(scanCount <= fragments.length) {
-  output.innerHTML = `
-    Sector ${scanCount} recovered:<br><br>
-    <b>${fragments[scanCount-1]}</b>
-  `;
-} else {
-  output.innerHTML = `
-    All sectors recovered.<br>
-    Assemble fragments and decode.<br>
-    Hint: Caesar shift = 3
-  `;
-  submission.style.display = "block";
+  if(!localStorage.getItem("startTime")) {
+    localStorage.setItem("startTime", Date.now());
+  }
+
+  const output = document.getElementById("output");
+  const submission = document.getElementById("submission");
+
+  if(scanCount <= fragments.length) {
+    output.innerHTML = `
+      Sector ${scanCount} recovered:<br><br>
+      <b>${fragments[scanCount-1]}</b>
+    `;
+  } else {
+    output.innerHTML = `
+      All sectors recovered.<br>
+      Assemble fragments and decode.<br>
+      Hint: Caesar shift = 3
+    `;
+    submission.style.display = "block";
+  }
 }
 
 // ---------------- SUBMIT LOGIC ----------------
