@@ -1,35 +1,35 @@
 body {
-  background-color: black;
-  color: #00ff88;
+  background: #111;
+  color: #00ff00;
   font-family: monospace;
-}
-
-.terminal {
-  width: 80%;
-  margin: 50px auto;
-}
-
-button {
-  background: black;
-  color: #00ff88;
-  border: 1px solid #00ff88;
-  padding: 5px;
-  cursor: pointer;
-}
-
-input {
-  background: black;
-  color: #00ff88;
-  border: 1px solid #00ff88;
-  padding: 5px;
-}
-
-@keyframes glitch {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
+  padding: 1em;
 }
 
 h2 {
-  animation: glitch 1.5s infinite;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  background: #222;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+}
+
+button {
+  width: 100%;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  background: #00ff00;
+  color: #111;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#leaderboard {
+  margin-top: 2em;
+  font-size: 0.9em;
 }
